@@ -1,0 +1,48 @@
+{
+    "version": "34",
+    "credential": {
+      "accessKey": "admin",
+      "secretKey": "password"
+    },
+    "region": "us-east-1",
+    "logger": {
+      "console": {
+        "enabled": true,
+        "level": "info"
+      },
+      "http": {
+        "enabled": true,
+        "endpoint": "http://localhost:9001/logs"
+      }
+    },
+    "storageClass": {
+      "standard": "2",
+      "rrs": "2"
+    },
+    "notify": {
+      "webhook": {
+        "1": {
+          "enable": true,
+          "endpoint": "http://localhost:9090",
+          "authToken": "your-webhook-token"
+        }
+      }
+    },
+    "api": {
+      "credentials": {
+        "jwt": {
+          "issuer": "minio"
+        }
+      },
+      "anonymous": {
+        "enabled": false
+      }
+    },
+    "browser": "on",
+    "domain": "",
+    "storage": {
+      "backend": "filesystem",
+      "drives": ["/data"]
+    }
+  }
+  
