@@ -1,97 +1,183 @@
+import os
 import argparse
 import asyncio
 import logging
-import os
-from prometheus_client import CollectorRegistry, push_to_gateway, REGISTRY
+from pathlib import Path
+from typing import Optional
 from pipeline.pipeline import process_all_files, initialize_minio
 
-# Pushgateway address (default configuration)
-PUSHGATEWAY_ADDRESS = "http://localhost:9091"
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
+    handlers=[
+        logging.StreamHandler(),
+        logging.FileHandler("pipeline.log")
+    ]
+)
+logger = logging.getLogger(__name__)
 
-# MinIO default configuration
-DEFAULT_MINIO_ENDPOINT = "http://localhost:9000"
-DEFAULT_MINIO_ACCESS_KEY = "admin"
-DEFAULT_MINIO_SECRET_KEY = "password"
-DEFAULT_MINIO_BUCKET = "text-processing"
-
-def push_metrics_to_gateway(job_name: str, registry: CollectorRegistry):
-    """Push metrics to the Prometheus Pushgateway."""
+def validate_directory(path: str) -> Path:
+    """
+    Validate and create directory if it doesn't exist.
+    
+    Args:
+        path: Directory path to validate
+        
+    Returns:
+        Path object of validated directory
+        
+    Raises:
+        argparse.ArgumentTypeError: If directory cannot be created or accessed
+    """
     try:
-        push_to_gateway(PUSHGATEWAY_ADDRESS, job=job_name, registry=registry)
-        logging.info(f"Metrics successfully pushed to Pushgateway at {PUSHGATEWAY_ADDRESS} for job '{job_name}'.")
+        path_obj = Path(path)
+        path_obj.mkdir(parents=True, exist_ok=True)
+        return path_obj
     except Exception as e:
-        logging.error(f"Failed to push metrics to Pushgateway: {e}")
+        raise argparse.ArgumentTypeError(f"Invalid directory {path}: {str(e)}")
 
-def main():
-    # Declare global variables
-    global PUSHGATEWAY_ADDRESS
+def validate_positive_int(value: str) -> int:
+    """
+    Validate positive integer arguments.
+    
+    Args:
+        value: String value to validate
+        
+    Returns:
+        Validated integer value
+        
+    Raises:
+        argparse.ArgumentTypeError: If value is not a positive integer
+    """
+    try:
+        ivalue = int(value)
+        if ivalue <= 0:
+            raise ValueError
+        return ivalue
+    except ValueError:
+        raise argparse.ArgumentTypeError(f"{value} must be a positive integer")
 
-    # Configure logging
-    logging.basicConfig(
-        level=logging.INFO,
-        format="%(asctime)s - %(levelname)s - %(message)s"
+def parse_args() -> argparse.Namespace:
+    """Parse and validate command line arguments."""
+    parser = argparse.ArgumentParser(
+        description="Process text files into chunks with MinIO support",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
-
-    # Argument parser for command-line arguments
-    parser = argparse.ArgumentParser(description="High-performance text processing pipeline.")
-    parser.add_argument("--input", required=True, help="Input directory containing text files.")
-    parser.add_argument("--output", required=True, help="Output directory for processed files.")
-    parser.add_argument("--max_tokens", type=int, default=512, help="Maximum tokens per chunk.")
-    parser.add_argument("--overlap", type=int, default=2, help="Number of sentences to overlap between chunks.")
-    parser.add_argument("--job_name", type=str, default="file_processing_job", help="Job name for Prometheus metrics.")
-    parser.add_argument("--pushgateway", type=str, default="http://localhost:9091", help="Pushgateway address.")
-    parser.add_argument("--minio_endpoint", type=str, default=DEFAULT_MINIO_ENDPOINT, help="MinIO server endpoint.")
-    parser.add_argument("--minio_access_key", type=str, default=DEFAULT_MINIO_ACCESS_KEY, help="MinIO access key.")
-    parser.add_argument("--minio_secret_key", type=str, default=DEFAULT_MINIO_SECRET_KEY, help="MinIO secret key.")
-    parser.add_argument("--minio_bucket", type=str, default=DEFAULT_MINIO_BUCKET, help="MinIO bucket name.")
-    parser.add_argument("--stream_to_minio", action="store_true", help="Enable streaming files to MinIO.")
-
+    
+    # Input/Output arguments
+    io_group = parser.add_argument_group("Input/Output Options")
+    io_group.add_argument(
+        "--input_dir",
+        type=validate_directory,
+        required=True,
+        help="Directory containing input text files"
+    )
+    io_group.add_argument(
+        "--output_dir",
+        type=validate_directory,
+        required=True,
+        help="Directory for output chunks and metadata"
+    )
+    
+    # Processing arguments
+    proc_group = parser.add_argument_group("Processing Options")
+    proc_group.add_argument(
+        "--max_tokens",
+        type=validate_positive_int,
+        required=True,
+        help="Maximum number of tokens per chunk"
+    )
+    proc_group.add_argument(
+        "--overlap",
+        type=validate_positive_int,
+        default=2,
+        help="Number of sentences to overlap between chunks"
+    )
+    
+    # MinIO arguments
+    minio_group = parser.add_argument_group("MinIO Options")
+    minio_group.add_argument(
+        "--stream_to_minio",
+        action="store_true",
+        help="Enable streaming to MinIO"
+    )
+    minio_group.add_argument(
+        "--minio_endpoint",
+        default="localhost:9000",
+        help="MinIO server endpoint"
+    )
+    minio_group.add_argument(
+        "--minio_access_key",
+        default="admin",
+        help="MinIO access key"
+    )
+    minio_group.add_argument(
+        "--minio_secret_key",
+        default="password",
+        help="MinIO secret key"
+    )
+    minio_group.add_argument(
+        "--minio_bucket",
+        default="text-processing",
+        help="MinIO bucket name"
+    )
+    
     args = parser.parse_args()
-
-    # Update Pushgateway address if provided
-    PUSHGATEWAY_ADDRESS = args.pushgateway
-
-    # Ensure the input directory exists
-    if not os.path.exists(args.input) or not os.path.isdir(args.input):
-        logging.error(f"Input directory does not exist: {args.input}")
-        return
-
-    # Ensure the output directory exists or create it
-    if not os.path.exists(args.output):
-        os.makedirs(args.output)
-        logging.info(f"Output directory created: {args.output}")
-
-    # Initialize MinIO if required
+    
+    # Additional validation for MinIO options
     if args.stream_to_minio:
-        try:
-            initialize_minio(
-                endpoint=args.minio_endpoint,
-                access_key=args.minio_access_key,
-                secret_key=args.minio_secret_key,
-                bucket_name=args.minio_bucket
-            )
-        except Exception as e:
-            logging.error(f"Failed to initialize MinIO: {e}")
-            return
+        required_minio = ['minio_endpoint', 'minio_access_key', 'minio_secret_key', 'minio_bucket']
+        missing = [opt for opt in required_minio if not getattr(args, opt)]
+        if missing:
+            parser.error(f"--stream_to_minio requires: {', '.join(missing)}")
+    
+    return args
 
-    # Use the default Prometheus registry (REGISTRY)
-    registry = REGISTRY
-
+async def main() -> None:
+    """Main entry point for the text processing pipeline."""
     try:
-        # Run the pipeline with MinIO streaming option
-        asyncio.run(process_all_files(
-            input_dir=args.input,
-            output_dir=args.output,
-            max_tokens=args.max_tokens,
-            overlap=args.overlap,
-            stream_to_minio=args.stream_to_minio
-        ))
-        logging.info("File processing completed successfully.")
+        args = parse_args()
+        
+        logger.info(f"Starting processing with input directory: {args.input_dir}")
+        logger.info(f"Output directory: {args.output_dir}")
+        
+        # Validate input directory has text files
+        input_files = list(args.input_dir.glob("*.txt"))
+        if not input_files:
+            logger.error(f"No .txt files found in {args.input_dir}")
+            return
+        
+        # Initialize MinIO if streaming is enabled
+        if args.stream_to_minio:
+            try:
+                initialize_minio(
+                    str(args.minio_endpoint),
+                    str(args.minio_access_key),
+                    str(args.minio_secret_key),
+                    str(args.minio_bucket)
+                )
+                logger.info(f"MinIO initialized with endpoint: {args.minio_endpoint}")
+            except Exception as e:
+                logger.error(f"Failed to initialize MinIO: {e}")
+                return
+        
+        # Process files
+        await process_all_files(
+            str(args.input_dir),
+            str(args.output_dir),
+            args.max_tokens,
+            args.overlap,
+            args.stream_to_minio
+        )
+        logger.info("Processing complete successfully.")
+        
     except Exception as e:
-        logging.error(f"An error occurred while processing files: {e}")
+        logger.error(f"Error during processing: {e}", exc_info=True)
+        raise
     finally:
-        # Push metrics to Pushgateway
-        push_metrics_to_gateway(args.job_name, registry)
+        # Add any cleanup if needed
+        pass
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
