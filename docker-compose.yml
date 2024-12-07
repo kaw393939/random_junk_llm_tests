@@ -5,29 +5,88 @@ services:
     image: prom/prometheus:latest
     container_name: prometheus
     ports:
-      - "9090:9090"  # Expose Prometheus on localhost:9090
+      - "9090:9090"
     volumes:
       - ./prometheus/config/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - ./prometheus/config/minio-alerts.yml:/etc/prometheus/minio-alerts.yml:ro
-    restart: unless-stopped  # Automatically restart Prometheus
+      - prometheus_data:/prometheus
+    restart: unless-stopped
     depends_on:
       - minio
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning
+      - ./grafana/dashboards:/var/lib/grafana/dashboards
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=grafana
+      - GF_USERS_ALLOW_SIGN_UP=false
+    restart: unless-stopped
+    depends_on:
+      - prometheus
 
   minio:
     image: minio/minio:latest
     container_name: minio
     ports:
-      - "9000:9000"  # MinIO Console
-      - "9001:9001"  # MinIO Management Console
+      - "9000:9000"
+      - "9001:9001"
     environment:
-      MINIO_ROOT_USER: "admin"       # MinIO root user
-      MINIO_ROOT_PASSWORD: "password" # MinIO root password
-      MINIO_PROMETHEUS_AUTH_TYPE: "public"  # Expose metrics without a bearer token
+      MINIO_ROOT_USER: "admin"
+      MINIO_ROOT_PASSWORD: "password"
+      MINIO_PROMETHEUS_AUTH_TYPE: "public"
     command: server /data --console-address ":9001"
     volumes:
-      - ./minio/data:/data           # Storage for MinIO
+      - ./minio/data:/data
     restart: unless-stopped
+
   pushgateway:
     image: prom/pushgateway
     ports:
       - "9091:9091"
+    restart: unless-stopped
+
+  weaviate:
+    command:
+    - --host
+    - 0.0.0.0
+    - --port
+    - '8080'
+    - --scheme
+    - http
+    image: cr.weaviate.io/semitechnologies/weaviate:1.27.7
+    ports:
+      - "8080:8080"
+      - "50051:50051"
+    volumes:
+      - weaviate_data:/var/lib/weaviate
+    restart: on-failure:0
+    environment:
+      CLIP_INFERENCE_API: 'http://multi2vec-clip:8080'
+      QUERY_DEFAULTS_LIMIT: 25
+      AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED: 'true'
+      PERSISTENCE_DATA_PATH: '/var/lib/weaviate'
+      ENABLE_MODULES: 'multi2vec-clip'
+      ENABLE_API_BASED_MODULES: 'true'
+      CLUSTER_HOSTNAME: 'node1'
+
+  multi2vec-clip:
+    image: cr.weaviate.io/semitechnologies/multi2vec-clip:sentence-transformers-clip-ViT-B-32-multilingual-v1
+    environment:
+      ENABLE_CUDA: '0'
+
+volumes:
+  prometheus_data:
+  weaviate_data:
+
+# Create the following directory structure:
+# ./prometheus/config/prometheus.yml
+# ./prometheus/config/minio-alerts.yml
+# ./grafana/provisioning/datasources/prometheus.yml
+# ./grafana/provisioning/dashboards/dashboard.yml
+# ./grafana/dashboards/minio-dashboard.json

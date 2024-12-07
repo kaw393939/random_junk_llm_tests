@@ -1,15 +1,25 @@
+# ./prometheus/config/prometheus.yml
 global:
-  scrape_interval: 5s    # Adjust scrape interval as needed
-  evaluation_interval: 5s
+  scrape_interval: 5s    # How frequently to scrape targets
+  evaluation_interval: 5s # How frequently to evaluate rules
 
+# Load rules once and periodically evaluate them
+rule_files:
+  - "rules/*.yml"
+
+# Scrape configurations
 scrape_configs:
   - job_name: 'pushgateway'
+    honor_labels: true    # Important for pushgateway to maintain pushed labels
     static_configs:
-      - targets: ['pushgateway:9091']  # Scrape metrics from the Pushgateway
-
+      - targets: ['pushgateway:9091']
 
   - job_name: 'minio-job'
     metrics_path: /minio/v2/metrics/cluster
     scheme: http
     static_configs:
-      - targets: ['minio:9000']      # Directly scrape metrics from MinIO
+      - targets: ['minio:9000']
+    
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']

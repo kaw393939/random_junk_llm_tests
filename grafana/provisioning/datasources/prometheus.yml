@@ -1,0 +1,11 @@
+# ./grafana/provisioning/datasources/prometheus.yml
+apiVersion: 1
+
+datasources:
+  - name: Prometheus
+    type: prometheus
+    access: proxy
+    url: http://prometheus:9090
+    uid: prometheus    # Add this line
+    isDefault: true
+    editable: false
