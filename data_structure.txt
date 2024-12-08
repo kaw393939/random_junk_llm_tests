@@ -1,0 +1,52 @@
+data
+├── 54e393e1-8c6d-453b-bf8c-e3f6d386f142
+│   ├── chunks
+│   │   ├── 54e393e1-8c6d-453b-bf8c-e3f6d386f142-chunk-0.json
+│   │   ├── 54e393e1-8c6d-453b-bf8c-e3f6d386f142-chunk-0.txt
+│   │   ├── 54e393e1-8c6d-453b-bf8c-e3f6d386f142-chunk-1.json
+│   │   ├── 54e393e1-8c6d-453b-bf8c-e3f6d386f142-chunk-1.txt
+│   │   ├── 54e393e1-8c6d-453b-bf8c-e3f6d386f142-chunk-2.json
+│   │   ├── 54e393e1-8c6d-453b-bf8c-e3f6d386f142-chunk-2.txt
+│   │   ├── 54e393e1-8c6d-453b-bf8c-e3f6d386f142-chunk-3.json
+│   │   ├── 54e393e1-8c6d-453b-bf8c-e3f6d386f142-chunk-3.txt
+│   │   ├── 54e393e1-8c6d-453b-bf8c-e3f6d386f142-chunk-4.json
+│   │   ├── 54e393e1-8c6d-453b-bf8c-e3f6d386f142-chunk-4.txt
+│   │   ├── 54e393e1-8c6d-453b-bf8c-e3f6d386f142-chunk-5.json
+│   │   ├── 54e393e1-8c6d-453b-bf8c-e3f6d386f142-chunk-5.txt
+│   │   ├── 54e393e1-8c6d-453b-bf8c-e3f6d386f142-chunk-6.json
+│   │   ├── 54e393e1-8c6d-453b-bf8c-e3f6d386f142-chunk-6.txt
+│   │   ├── 54e393e1-8c6d-453b-bf8c-e3f6d386f142-chunk-7.json
+│   │   ├── 54e393e1-8c6d-453b-bf8c-e3f6d386f142-chunk-7.txt
+│   │   ├── 54e393e1-8c6d-453b-bf8c-e3f6d386f142-chunk-8.json
+│   │   └── 54e393e1-8c6d-453b-bf8c-e3f6d386f142-chunk-8.txt
+│   ├── document_info.json
+│   ├── processing_state.json
+│   └── source
+│       └── egypt.txt
+├── 608f5d62-fd76-424f-b8f3-9ceb1839b7f3
+│   ├── chunks
+│   │   ├── 608f5d62-fd76-424f-b8f3-9ceb1839b7f3-chunk-0.json
+│   │   ├── 608f5d62-fd76-424f-b8f3-9ceb1839b7f3-chunk-0.txt
+│   │   ├── 608f5d62-fd76-424f-b8f3-9ceb1839b7f3-chunk-1.json
+│   │   ├── 608f5d62-fd76-424f-b8f3-9ceb1839b7f3-chunk-1.txt
+│   │   ├── 608f5d62-fd76-424f-b8f3-9ceb1839b7f3-chunk-2.json
+│   │   ├── 608f5d62-fd76-424f-b8f3-9ceb1839b7f3-chunk-2.txt
+│   │   ├── 608f5d62-fd76-424f-b8f3-9ceb1839b7f3-chunk-3.json
+│   │   ├── 608f5d62-fd76-424f-b8f3-9ceb1839b7f3-chunk-3.txt
+│   │   ├── 608f5d62-fd76-424f-b8f3-9ceb1839b7f3-chunk-4.json
+│   │   ├── 608f5d62-fd76-424f-b8f3-9ceb1839b7f3-chunk-4.txt
+│   │   ├── 608f5d62-fd76-424f-b8f3-9ceb1839b7f3-chunk-5.json
+│   │   ├── 608f5d62-fd76-424f-b8f3-9ceb1839b7f3-chunk-5.txt
+│   │   ├── 608f5d62-fd76-424f-b8f3-9ceb1839b7f3-chunk-6.json
+│   │   ├── 608f5d62-fd76-424f-b8f3-9ceb1839b7f3-chunk-6.txt
+│   │   ├── 608f5d62-fd76-424f-b8f3-9ceb1839b7f3-chunk-7.json
+│   │   └── 608f5d62-fd76-424f-b8f3-9ceb1839b7f3-chunk-7.txt
+│   ├── document_info.json
+│   ├── processing_state.json
+│   └── source
+│       └── byzantium.txt
+├── manifest.json
+├── processing_799192e4-908e-491a-8c74-619f32f48902.json
+└── processing_aa2d5fc4-9197-4867-95e3-c551fc2c6873.json
+
+6 directories, 43 files
