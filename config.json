@@ -1,0 +1,25 @@
+{
+    "prompts": [
+      {
+        "name": "sentiment_analysis",
+        "template": "Analyze the sentiment of the following text: \"{text}\". Provide a brief summary indicating whether the sentiment is positive, negative, or neutral."
+      },
+      {
+        "name": "keyword_extraction",
+        "template": "Extract key topics from the following text: \"{text}\". List the most important keywords or phrases that capture the essence of the content."
+      },
+      {
+        "name": "entity_extraction",
+        "template": "Identify and list all named entities (persons, organizations, locations, dates, miscellaneous) in the following text: \"{text}\". Return the results in JSON format."
+      },
+      {
+        "name": "entity_disambiguation",
+        "template": "Disambiguate the following entities in the text: \"{text}\". Provide clarification for each ambiguous entity based on the context. Return the results in JSON format."
+      }
+    ],
+    "max_concurrent_requests": 5,
+    "chunk_size": 3000,
+    "chunk_overlap": 200,
+    "log_level": "INFO"
+  }
+  

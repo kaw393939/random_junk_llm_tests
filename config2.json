@@ -1,0 +1,26 @@
+{
+  "prompts": [
+    {
+      "name": "enhanced_entity_extraction",
+      "template": "Identify and list all named entities in the following text: \"{text}\". For each entity, provide its type (e.g., Person, Organization, Location, Date) and any relevant attributes or descriptions. Return the results in JSON format."
+    },
+    {
+      "name": "relationship_extraction",
+      "template": "Identify and list all relationships between the entities in the following text: \"{text}\". For each relationship, specify the subject, predicate, and object. Return the results in JSON format."
+    },
+    {
+      "name": "temporal_extraction",
+      "template": "Extract all temporal information from the following text: \"{text}\". For each temporal reference, provide the event, the date or timeframe, and any related entities. Return the results in JSON format."
+    },
+    {
+      "name": "sentiment_analysis_enhanced",
+      "template": "Analyze the sentiment of the following text: \"{text}\". Identify which entities the sentiment is associated with and specify whether the sentiment is positive, negative, or neutral for each. Return the results in JSON format."
+    },
+    {
+      "name": "comprehensive_knowledge_graph",
+      "template": "Analyze the following text: \"{text}\". Extract entities, their relationships, attributes, and temporal information to construct a comprehensive knowledge graph. Structure the output in JSON with separate sections for entities, relationships, attributes, and temporal data."
+    }
+  ],
+  "max_concurrent_requests": 5,
+  "log_level": "INFO"
+}

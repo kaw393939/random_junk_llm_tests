@@ -1,0 +1,9 @@
+pyproject.toml
+src/processor.py
+src/utils.py
+src/UNKNOWN.egg-info/PKG-INFO
+src/UNKNOWN.egg-info/SOURCES.txt
+src/UNKNOWN.egg-info/dependency_links.txt
+src/UNKNOWN.egg-info/top_level.txt
+src/models/__init__.py
+src/models/document.py

@@ -1,0 +1,20 @@
+data
+├── e34ba2db-227a-4480-b102-8b9f6a2c91ee
+│   ├── chunks
+│   │   ├── e34ba2db-227a-4480-b102-8b9f6a2c91ee-chunk-0.json
+│   │   ├── e34ba2db-227a-4480-b102-8b9f6a2c91ee-chunk-0.txt
+│   │   ├── e34ba2db-227a-4480-b102-8b9f6a2c91ee-chunk-1.json
+│   │   ├── e34ba2db-227a-4480-b102-8b9f6a2c91ee-chunk-1.txt
+│   │   ├── e34ba2db-227a-4480-b102-8b9f6a2c91ee-chunk-2.json
+│   │   └── e34ba2db-227a-4480-b102-8b9f6a2c91ee-chunk-2.txt
+│   ├── document_info.json
+│   ├── processing_state.json
+│   ├── prompt_results
+│   │   ├── e34ba2db-227a-4480-b102-8b9f6a2c91ee-chunk-0_analysis.json
+│   │   └── e34ba2db-227a-4480-b102-8b9f6a2c91ee-chunk-1_analysis.json
+│   └── source
+│       └── egypt.txt
+├── manifest.json
+└── processing_8a7aa888-41fd-4d98-b599-95497a80779c.json
+
+4 directories, 13 files
